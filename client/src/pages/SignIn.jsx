@@ -1,13 +1,18 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from 'react-redux';
-import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice'
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
+import OAuth from "../components/OAuth";
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   // const [error, setError] = useState(null);
-  const {loading, error} = useSelector((state) => state.user)
+  const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const handleChange = (e) => {
@@ -18,7 +23,7 @@ export default function SignIn() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(signInStart)
+    dispatch(signInStart);
     const res = await fetch("/api/auth/signin", {
       method: "POST",
       headers: {
@@ -29,9 +34,9 @@ export default function SignIn() {
     const data = await res.json();
     console.log(data);
     if (data.success === false) {
-      dispatch(signInFailure(data.message))
+      dispatch(signInFailure(data.message));
     } else {
-      dispatch(signInSuccess(data))
+      dispatch(signInSuccess(data));
       navigate("/");
     }
     setIsSubmitting(false);
@@ -61,10 +66,11 @@ export default function SignIn() {
         >
           {isSubmitting ? "Loading..." : "Sign in"}
         </button>
+        <OAuth />
         <div className="flex gap-2 mt-5">
           <p>Dont have an account?</p>
-          <Link to="sign-up">
-            <span className="text-blue-700 text-center">Sign in</span>
+          <Link to="/sign-up">
+            <span className="text-blue-700 text-center">Sign up</span>
           </Link>
         </div>
         {error && (
