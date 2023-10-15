@@ -1,5 +1,74 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function SignIn() {
-  return <div>SignIn</div>;
+  const [formData, setFormData] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    });
+  };
+  const handleSubmit = async (e) => {
+    setIsSubmitting(true);
+    e.preventDefault();
+    const res = await fetch("/api/auth/signin", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+    const data = await res.json();
+    console.log(data);
+    if (data.success === false) {
+      setError(data.message);
+    } else {
+      setError(null);
+      navigate("/");
+    }
+    setIsSubmitting(false);
+  };
+  return (
+    <div className="p-3 max-w-lg mx-auto">
+      <h1 className="text-3xl text-center font-semibold my-7">Sign In</h1>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {isSubmitting && <p>Please wait as we sign you up...</p>}
+        <input
+          type="email"
+          placeholder="email"
+          className="border p-3 rounded-lg"
+          id="email"
+          onChange={handleChange}
+        />
+        <input
+          type="password"
+          placeholder="password"
+          className="border p-3 rounded-lg"
+          id="password"
+          onChange={handleChange}
+        />
+        <button
+          disabled={isSubmitting}
+          className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
+        >
+          {isSubmitting ? "Loading..." : "Sign in"}
+        </button>
+        <div className="flex gap-2 mt-5">
+          <p>Dont have an account?</p>
+          <Link to="sign-up">
+            <span className="text-blue-700 text-center">Sign in</span>
+          </Link>
+        </div>
+        {error && (
+          <p>
+            There was an error submitting your data: {error} Please try again
+          </p>
+        )}
+      </form>
+    </div>
+  );
 }
