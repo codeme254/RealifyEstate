@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
+import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice'
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
+  const {loading, error} = useSelector((state) => state.user)
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -13,8 +17,8 @@ export default function SignIn() {
     });
   };
   const handleSubmit = async (e) => {
-    setIsSubmitting(true);
     e.preventDefault();
+    dispatch(signInStart)
     const res = await fetch("/api/auth/signin", {
       method: "POST",
       headers: {
@@ -25,9 +29,9 @@ export default function SignIn() {
     const data = await res.json();
     console.log(data);
     if (data.success === false) {
-      setError(data.message);
+      dispatch(signInFailure(data.message))
     } else {
-      setError(null);
+      dispatch(signInSuccess(data))
       navigate("/");
     }
     setIsSubmitting(false);
@@ -36,7 +40,7 @@ export default function SignIn() {
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl text-center font-semibold my-7">Sign In</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {isSubmitting && <p>Please wait as we sign you up...</p>}
+        {loading && <p>Please wait as we sign you in...</p>}
         <input
           type="email"
           placeholder="email"
@@ -52,7 +56,7 @@ export default function SignIn() {
           onChange={handleChange}
         />
         <button
-          disabled={isSubmitting}
+          disabled={loading}
           className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
         >
           {isSubmitting ? "Loading..." : "Sign in"}
