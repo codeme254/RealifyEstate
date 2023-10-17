@@ -1,0 +1,10 @@
+making request with cookie
+
+### sign in
+POST http://localhost:3000/api/user/update/652b816107089e4a19a600c3
+Content-Type: application/json
+Cookie: : access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1MmI4MTYxMDcwODllNGExOWE2MDBjMyIsImlhdCI6MTY5NzUzMzA0N30.vhDdUWRtFYODxXQZ0XGj9e5DeNjd44VqluhIB0pwABU
+
+{
+    "username": "Test-working"
+}
